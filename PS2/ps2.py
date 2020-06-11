@@ -88,13 +88,13 @@ def load_map(map_filename):
 
 # Problem 2c: Testing load_map
 # Include the lines used to test load_map below, but comment them out
-diGraph = load_map('mit_map.txt')
-def printMap(diGraph) :
-   for eachNode in diGraph.nodes:
-       edgeList = diGraph.get_edges_for_node(eachNode)
-       for eachEdge in edgeList:
-           print(eachEdge)
-printMap(diGraph)        
+# diGraph = load_map('mit_map.txt')
+# def printMap(diGraph) :
+#    for eachNode in diGraph.nodes:
+#        edgeList = diGraph.get_edges_for_node(eachNode)
+#        for eachEdge in edgeList:
+#            print(eachEdge)
+# printMap(diGraph)        
     
 
 #
@@ -105,7 +105,8 @@ printMap(diGraph)
 # What is the objective function for this problem? What are the constraints?
 #
 # Answer:
-#
+#Objective: To minimize the total distance travelled between start and end.
+#Constraint: To not exceed the maxdistance spent outdoors
 
 # Problem 3b: Implement get_best_path
 def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
@@ -143,8 +144,48 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         max_dist_outdoors constraints, then return None.
     """
     # TODO
-    pass
-
+    # path = Gpath[:]
+    # path[0] = Gpath[0][:] # dangerous revisit
+    path = [list(path[0]),path[1],path[2]]
+    
+    path[0].append(start)
+    startNode = Node(start)
+    endNode = Node(end)
+    #if either nodes dont exist
+    if  not digraph.has_node(startNode) or  not digraph.has_node(endNode):
+        raise ValueError('node not found')
+        
+    elif startNode == endNode :
+        return path
+    else :
+        for eachEdge in digraph.get_edges_for_node(startNode):
+            print(eachEdge)
+            if start == '32':
+                print ('check')
+            if str(eachEdge.get_destination()) not in path[0]:#avoiding cycles
+               
+                #minimizing total distance such that
+                if best_path==None or (path[1]+int(eachEdge.get_total_distance()))<best_path[1]:
+                    #distance travelled outdoors doesnt exceed max_dist_outdoors
+                    if (path[2]+int(eachEdge.get_outdoor_distance()))<=max_dist_outdoors:
+                         # if str(eachEdge.get_destination())=='64':
+                         #    print(eachEdge)
+                         tempTotDist = path[1]+int(eachEdge.get_total_distance())#total distance
+                         tempIndDist = path[2]+int(eachEdge.get_outdoor_distance())#total outdoor distance
+                         tempPath = [list(path[0]),tempTotDist,tempIndDist]
+                         newPath = get_best_path(digraph,str(eachEdge.get_destination()),end,tempPath,\
+                                            max_dist_outdoors,best_dist,best_path)
+                         
+                         if newPath!=None:
+                            best_path=newPath
+            else:
+                print('This Node already visited: ',eachEdge.get_destination())
+    return best_path
+        
+ 
+        
+        
+    
 
 # Problem 3c: Implement directed_dfs
 def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
@@ -176,7 +217,21 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
         max_dist_outdoors constraints, then raises a ValueError.
     """
     # TODO
-    pass
+    path = [[],0,0]
+    best_dist=0
+    bestPath = get_best_path(digraph,start,end,path,max_dist_outdoors,best_dist\
+                             ,None)
+        
+    if bestPath == None:
+        raise ValueError
+    elif bestPath[1]>max_total_dist:
+        raise ValueError
+    else:
+        return bestPath[0]
+    
+        
+    
+#bp = get_best_path(diGraph,'10','32',[[],0,0],30,0,None)   
 
 
 # ================================================================
@@ -215,9 +270,9 @@ class Ps2Test(unittest.TestCase):
             start, end, constraint))
 
     def _test_path(self,
-                   expectedPath,
-                   total_dist=LARGE_DIST,
-                   outdoor_dist=LARGE_DIST):
+                    expectedPath,
+                    total_dist=LARGE_DIST,
+                    outdoor_dist=LARGE_DIST):
         start, end = expectedPath[0], expectedPath[-1]
         self._print_path_description(start, end, total_dist, outdoor_dist)
         dfsPath = directed_dfs(self.graph, start, end, total_dist, outdoor_dist)

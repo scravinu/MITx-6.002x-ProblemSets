@@ -1,7 +1,7 @@
 # 6.0002 Problem Set 5
 # Graph optimization
-# Name:
-# Collaborators:
+# Name: Sharad Chand Ravintuhala
+# Collaborators: None
 # Time:
 
 import unittest
@@ -63,13 +63,13 @@ class WeightedEdge(Edge):
         
     def get_total_distance(self):
         # TODO
-        return self.toal_distance
+        return self.total_distance
     def get_outdoor_distance(self):
          # TODO
         return self.outdoor_distance
     def __str__(self):
           # TODO
-        return '{}->{}({},{})'.format(self.src,self.dest,self.total_distance,\
+        return '{}->{} ({}, {})'.format(self.src,self.dest,self.total_distance,\
                                      self.outdoor_distance)
         
 class Digraph(object):
