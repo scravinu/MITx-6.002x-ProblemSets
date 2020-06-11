@@ -1,4 +1,4 @@
-# 6.0002 Problem Set 5
+# 6.0002 Problem Set 2
 # Graph optimization
 # Name: Sharad Chand Ravintuhala
 # Collaborators: None

@@ -1,9 +1,9 @@
-# 6.0002 Problem Set 5
+# 6.0002 Problem Set 2
 # Graph optimization
 # Name: Sharad Chand Ravinuthala
 
-# Collaborators:
-# Time:
+# Collaborators: None
+# Time: 5 days
 
 #
 # Finding shortest paths through MIT buildings
@@ -159,25 +159,25 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         return path
     else :
         for eachEdge in digraph.get_edges_for_node(startNode):
-            print(eachEdge)
-            if start == '32':
-                print ('check')
-            if str(eachEdge.get_destination()) not in path[0]:#avoiding cycles
-               
+            #print(eachEdge)
+            edgeTotDist = int(eachEdge.get_total_distance())
+            edgeOutDist = int(eachEdge.get_outdoor_distance())
+            edgeDestination = str(eachEdge.get_destination())
+            
+            if edgeDestination not in path[0]:#avoiding cycles
                 #minimizing total distance such that
-                if best_path==None or (path[1]+int(eachEdge.get_total_distance()))<best_path[1]:
+                if best_path == None or (path[1]+edgeTotDist) < best_path[1]:
                     #distance travelled outdoors doesnt exceed max_dist_outdoors
-                    if (path[2]+int(eachEdge.get_outdoor_distance()))<=max_dist_outdoors:
-                         # if str(eachEdge.get_destination())=='64':
-                         #    print(eachEdge)
-                         tempTotDist = path[1]+int(eachEdge.get_total_distance())#total distance
-                         tempIndDist = path[2]+int(eachEdge.get_outdoor_distance())#total outdoor distance
-                         tempPath = [list(path[0]),tempTotDist,tempIndDist]
-                         newPath = get_best_path(digraph,str(eachEdge.get_destination()),end,tempPath,\
+                    if (path[2] + edgeOutDist) <= max_dist_outdoors:
+                         #using tempPath to prevent path from getting contaminated
+                         tempTotDist = path[1] + edgeTotDist#total distance
+                         tempOutDist = path[2] + edgeOutDist#total outdoor distance
+                         tempPath = [list(path[0]),tempTotDist,tempOutDist]
+                         newPath = get_best_path(digraph,edgeDestination,end,tempPath,\
                                             max_dist_outdoors,best_dist,best_path)
                          
-                         if newPath!=None:
-                            best_path=newPath
+                         if newPath != None:
+                            best_path = newPath
             else:
                 print('This Node already visited: ',eachEdge.get_destination())
     return best_path
@@ -224,7 +224,7 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
         
     if bestPath == None:
         raise ValueError
-    elif bestPath[1]>max_total_dist:
+    elif bestPath[1] > max_total_dist:
         raise ValueError
     else:
         return bestPath[0]
