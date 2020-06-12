@@ -76,12 +76,32 @@ class RectangularRoom(object):
         """
         Initializes a rectangular room with the specified width, height, and 
         dirt_amount on each tile.
-
         width: an integer > 0
         height: an integer > 0
         dirt_amount: an integer >= 0
         """
-        raise NotImplementedError
+        self.width = width
+        self.height = height
+        self.dirt_amount = dirt_amount
+        self.tiles = []
+        
+        
+        assert type(width) == int and width > 0, 'width is not an int > 0'
+        assert type(height) == int and height > 0 , 'height is not an int > 0'
+        assert type(dirt_amount) == int and dirt_amount > 0, 'dirt not an int\
+            > 0'
+            
+        #initiliazing tiles with dirt_amount
+        # temp = []
+        # for i in range(self.width):
+        #     for k in range(self,height):
+        #         temp.append(self.dirt_amount)
+        #     self.tiles.append(temp)
+        
+        #using a list comprehension for initiliazing dirt
+        self.tiles = [[dirt_amount for i in range(self.width)] for j in range(self.height)]
+        
+        #raise NotImplementedError
     
     def clean_tile_at_position(self, pos, capacity):
         """
@@ -96,7 +116,18 @@ class RectangularRoom(object):
         Note: The amount of dirt on each tile should be NON-NEGATIVE.
               If the capacity exceeds the amount of dirt on the tile, mark it as 0.
         """
-        raise NotImplementedError
+        
+    
+        #getting the tile indices
+        tileX = math.floor(pos.get_x())
+        tileY = math.floor(pos.get_y())
+        
+        if capacity >= self.tiles[tileX][tileY]:
+            self.tiles[tileX][tileY] = 0
+        else:
+            self.tiles[tileX][tileY] = self.tiles[tileX][tileY] - capacity
+        
+        #raise NotImplementedError
 
     def is_tile_cleaned(self, m, n):
         """
@@ -112,13 +143,24 @@ class RectangularRoom(object):
         Note: The tile is considered clean only when the amount of dirt on this
               tile is 0.
         """
-        raise NotImplementedError
+        
+        return self.tiles(m,n)==0
+        #raise NotImplementedError
 
     def get_num_cleaned_tiles(self):
         """
         Returns: an integer; the total number of clean tiles in the room
         """
-        raise NotImplementedError
+        cleanTileCount = 0
+        for i in range(self.width):
+            for j in range(self.height):
+                if self.tiles[i][j] == 0:
+                    cleanTileCount+=1
+        
+        return cleanTileCount
+        
+                 
+        #raise NotImplementedError
         
     def is_position_in_room(self, pos):
         """
@@ -261,7 +303,7 @@ class FurnishedRoom(RectangularRoom):
     furniture. The robot should not be able to land on these furniture tiles.
     """
     def __init__(self, width, height, dirt_amount):
-        """ 
+        """ cl
         Initializes a FurnishedRoom, a subclass of RectangularRoom. FurnishedRoom
         also has a list of tiles which are furnished (furniture_tiles).
         """
