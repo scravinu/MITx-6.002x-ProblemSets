@@ -420,7 +420,7 @@ class FurnishedRoom(RectangularRoom):
         """
         Returns: an integer; the total number of tiles in the room that can be accessed.
         """
-        return len(self.furniture_tiles)
+        return ((self.height * self.width) - len(self.furniture_tiles))
         #raise NotImplementedError
         
     def get_random_position(self):
@@ -462,7 +462,7 @@ class StandardRobot(Robot):
         #updating position
         
         robotNewPos = robotPos.get_new_position(robotDir,robotSpeed)
-        if self.is_position_valid(robotNewPos):
+        if robotRoom.is_position_valid(robotNewPos):
             self.set_robot_position(robotNewPos)#moving to a new position
             robotRoom.clean_tile_at_position(robotNewPos,robotCapacity)
             
@@ -473,8 +473,8 @@ class StandardRobot(Robot):
         #raise NotImplementedError
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-test_robot_movement(StandardRobot, EmptyRoom)
-#test_robot_movement(StandardRobot, FurnishedRoom)
+#test_robot_movement(StandardRobot, EmptyRoom)
+test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):
