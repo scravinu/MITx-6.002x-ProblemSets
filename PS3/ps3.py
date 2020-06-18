@@ -474,7 +474,7 @@ class StandardRobot(Robot):
 
 # Uncomment this line to see your implementation of StandardRobot in action!
 #test_robot_movement(StandardRobot, EmptyRoom)
-test_robot_movement(StandardRobot, FurnishedRoom)
+#test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
 class FaultyRobot(Robot):
@@ -514,7 +514,26 @@ class FaultyRobot(Robot):
         StandardRobot at this time-step (checking if it can move to a new position,
         move there if it can, pick a new direction and stay stationary if it can't)
         """
-        raise NotImplementedError
+        robotPos = self.get_robot_position()
+        robotDir = self.get_robot_direction()
+        robotCapacity = self.capacity
+        robotSpeed = self.speed
+        robotRoom = self.room
+        
+        if self.gets_faulty():
+            robotDir = self.get_random_direction()
+            self.set_robot_direction(robotDir)
+        else: # same as Standard Robot Code
+            robotNewPos = robotPos.get_new_position(robotDir,robotSpeed)
+            if robotRoom.is_position_valid(robotNewPos):
+                self.set_robot_position(robotNewPos)#moving to a new position
+                robotRoom.clean_tile_at_position(robotNewPos,robotCapacity)
+                
+            else:
+                robotDir = self.get_random_direction()
+                self.set_robot_direction(robotDir)
+            
+        #raise NotImplementedError
         
     
 #test_robot_movement(FaultyRobot, EmptyRoom)
@@ -541,14 +560,53 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 FaultyRobot)
     """
-    raise NotImplementedError
+    #robots = []
+    roomType = EmptyRoom(width,height,dirt_amount)
+    time_steps = 0
+    
+    grand_total_time = 0
+    coverage = 0
+    #Initializing the list of robots
+#    def initialize_robots(num_robots):
+#        robots = []
+#        for eachRobot in range(num_robots):
+#            robots.append(robot_type(roomType,speed,capacity))
+#    return robots  
+    
+    #initializing robots with a list comprehension
+    robots = [robot_type(roomType,speed,capacity) for eachRobot in range(num_robots)]
+    # Starting trials
+    for i in range(num_trials):
+        while coverage < min_coverage:
+            time_steps += 1
+            for robot in robots:
+                robot.update_position_and_clean()
+                coverage = roomType.get_num_cleaned_tiles()/roomType.get_num_tiles()
+        grand_total_time += time_steps
+        time_steps = 0
+        coverage = 0
+        roomType = EmptyRoom(width,height,dirt_amount) # re initializting room
+        robots = [robot_type(roomType,speed,capacity) for eachRobot in range(num_robots)]
+    average_time = grand_total_time / num_trials
+    return round((average_time),2)   
+    
+avg = run_simulation(1, 0.2, 2, 3, 10, 6, 0.9, 100,StandardRobot)            
+            
+            
+        
+    
+    
+    
+    
+    
+    #raise NotImplementedError
 
 
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 
 # === Problem 6
 #
@@ -592,7 +650,7 @@ def show_plot_room_shape(title, x_label, y_label):
     times1 = []
     times2 = []
     for width in [10, 20, 25, 50]:
-        height = 300/width
+        height = int(300/width)
         print ("Plotting cleaning time for a room of width:", width, "by height:", height)
         aspect_ratios.append(float(width) / height)
         times1.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 200, StandardRobot))
@@ -607,4 +665,4 @@ def show_plot_room_shape(title, x_label, y_label):
 
 
 #show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
-#show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
+show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
