@@ -44,7 +44,7 @@ def make_one_curve_plot(x_coords, y_coords, x_label, y_label, title):
     pl.xlabel(x_label)
     pl.ylabel(y_label)
     pl.title(title)
-    pl.show()
+    #pl.show()
 
 
 def make_two_curve_plot(x_coords,
